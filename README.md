@@ -16,7 +16,8 @@ Toàn bộ dữ liệu vector của cả 2 bộ được quản lý trong cơ s�
 milvus/
 ├── requirements.txt          # Danh sách thư viện Python cần cài đặt
 ├── device_utils.py           # Module quản lý thiết bị GPU/CUDA, auto-detect, FP16, fallback CPU
-├── download_data.py          # Script tải dữ liệu từ Hugging Face
+├── benchmark_all.py          # Script benchmark lần lượt TOÀN BỘ 2 bộ dữ liệu (All-in-One)
+├── benchmark_full.py         # Script benchmark thực nghiệm 100% Full Corpus, Queries & Qrels
 ├── index_milvus.py           # Script trích xuất vector embedding và nạp vào Milvus (hỗ trợ GPU & FP16)
 ├── search_milvus.py          # Script tìm kiếm (CLI một câu hỏi, REPL tương tác)
 ├── evaluate_milvus.py        # Script đo lường Recall@K, Latency và QPS trên dữ liệu hiện có
@@ -33,24 +34,19 @@ milvus/
 
 ---
 
-## 📈 1. Tính toán & Dự báo Hiệu năng khi Nạp Toàn bộ Dữ liệu (`benchmark_full_corpus.py`)
+## 🚀 1. Benchmark 100% Full Corpus, Queries & Qrels (`benchmark_full.py`)
 
-Script [benchmark_full_corpus.py](file:///d:/New/milvus/benchmark_full_corpus.py) giải quyết bài toán: **Hiệu năng của Milvus (Recall@K, Latency, QPS và RAM/Disk) sẽ như thế nào khi nạp đủ 100% toàn bộ corpus?**
-
-### Cách chạy:
+Script [benchmark_full.py](file:///d:/New/milvus/benchmark_full.py) thực thi đo lường thực nghiệm chính xác tuyệt đối trên **100% dữ liệu thật** (không dùng sample, không dùng pool rút gọn) và **tự động lưu kết quả ra file JSON**:
 
 ```bash
-# 1. Dự báo ngay hiệu năng khi nạp đủ 61.425 văn bản Zalo Legal:
-python benchmark_full_corpus.py --dataset zalo
+# 1. Benchmark 100% Corpus Zalo Legal (61.425 docs, 818 queries, 793 qrels) - Chạy trong ~38 giây:
+python benchmark_full.py --dataset zalo --device cuda --fp16
 
-# 2. Dự báo ngay hiệu năng khi nạp đủ 2.68 triệu văn bản NQ-VN:
-python benchmark_full_corpus.py --dataset nq
+# 2. Benchmark 100% Full Corpus NQ-VN (Tự động nạp nốt 2.68 triệu docs bằng GPU rồi đo 1.900 queries):
+python benchmark_full.py --dataset nq --device cuda --fp16
 
-# 3. Tự động nạp nốt 100% dữ liệu vào Milvus và đo lường trực tiếp toàn diện:
-python benchmark_full_corpus.py --dataset zalo --auto-index-full
-
-# 4. Xuất kết quả chi tiết ra file JSON:
-python benchmark_full_corpus.py --dataset zalo --output-json full_corpus_report.json
+# 3. Chạy lần lượt cả 2 bộ dữ liệu:
+python benchmark_full.py --dataset both --device cuda --fp16 --output-json full_results.json
 ```
 
 ---
